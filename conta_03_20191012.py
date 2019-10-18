@@ -63,7 +63,30 @@ class Contabilidad:
            numParte = m.numCta // 100000
            self.listaPartes[numParte].registraMovto(m)
            
+   def PTU(self):
+       tot=self.listaPartes[3].colCtas.get(300100).saldo().monto
+       ptu=tot*0.10
+       self.altaCta(200500,"PTU por pagar","A")
+       polPTU=PolizaContable(2000,dt,"PTU")
+       polPTU.cargo(300100, ptu)
+       polPTU.abono(200500, ptu)
+       self.registraPoliza(polPTU)
+       return "PTU: "+str(ptu)
    
+    
+   def ISR(self):
+       ptu=self.listaPartes[3].colCtas.get(200500)
+       if ptu is None:
+           isr=self.listaPartes[3].colCtas.get(300100).saldo().monto*0.30
+       else:
+           isr=self.listaPartes[3].colCtas.get(300100).saldo().monto*0.27
+       self.altaCta(200600,"ISR por pagar","A")
+       polISR=PolizaContable(3000,dt,"ISR")
+       polISR.cargo(300100, isr)
+       polISR.abono(200600, isr)
+       self.registraPoliza(polISR)
+           
+       return "ISR: "+str(isr)
     
            
    def impBalance(self):  
@@ -314,8 +337,16 @@ print("+++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
 print( conta.impBalance())
 conta.cierre()
+
+print('Posterior al cierre del ejercicio')
 print(conta)
 print( conta.impBalance())
+print('Posterior al PTU del ejercicio')
+print(conta.PTU())
+print(conta)
+print('Posterior al ISR del ejercicio')
+print(conta.ISR())
+print(conta)
 #conta.altaCta(300100,"Resultado del ejercicio","A")
 #conta.registraPoliza(pol_5)
 
