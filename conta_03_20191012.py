@@ -64,13 +64,17 @@ class Contabilidad:
            self.listaPartes[numParte].registraMovto(m)
            
    def PTU(self):
-       tot=self.listaPartes[3].colCtas.get(300100).saldo().monto
-       ptu=tot*0.10
-       self.altaCta(200500,"PTU por pagar","A")
-       polPTU=PolizaContable(2000,dt,"PTU")
-       polPTU.cargo(300100, ptu)
-       polPTU.abono(200500, ptu)
-       self.registraPoliza(polPTU)
+       res=self.listaPartes[3].colCtas.get(300100)
+       if(res is not None):
+           tot=res.saldo().monto
+           ptu=tot*0.10
+           self.altaCta(200500,"PTU por pagar","A")
+           polPTU=PolizaContable(2000,dt,"PTU")
+           polPTU.cargo(300100, ptu)
+           polPTU.abono(200500, ptu)
+           self.registraPoliza(polPTU)
+       else:
+           raise Exception("No se ha realizado el cierre")
        return "PTU: "+str(ptu)
    
     
@@ -95,7 +99,11 @@ class Contabilidad:
             strRes += p.impBalance()
        strRes += 61 * '-' + '\n'     
        strRes +=  "Activo = \tPasivo \t+ Capital \t+ Ingresos \t- Egresos\n"
-       strRes += str(self.listaPartes[1].saldo().monto) + " = \t" + str(self.listaPartes[2].saldo().monto) + " \t+ " + str(self.listaPartes[3].saldo().monto) + " \t+ " + str(self.listaPartes[4].saldo().monto) + " \t- " + str(self.listaPartes[5].saldo().monto) + "\n"    
+       strRes += str(self.listaPartes[1].saldo().monto) 
+       strRes += " = \t" + str(self.listaPartes[2].saldo().monto)
+       strRes += " \t+ " + str(self.listaPartes[3].saldo().monto)
+       strRes += " \t+ " + str(self.listaPartes[4].saldo().monto)
+       strRes += " \t- " + str(self.listaPartes[5].saldo().monto) + "\n"
        strRes += 61 * '-' + '\n'  
        return strRes
    
@@ -347,8 +355,7 @@ print(conta)
 print('Posterior al ISR del ejercicio')
 print(conta.ISR())
 print(conta)
-#conta.altaCta(300100,"Resultado del ejercicio","A")
-#conta.registraPoliza(pol_5)
+
 
 #1) El despliegue de la verificación de Activo = Pasivo + Capital + Ingresos - Egresos
 #2) El cierre del ejercicio (método de la Contabilidad):
